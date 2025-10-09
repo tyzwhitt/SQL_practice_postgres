@@ -1,4 +1,4 @@
---sting functions ; lets clean up some data
+--string functions ; lets clean up some data
 -- trim leading and trailing spaces from a string
 --CONCATENATE two or more strings
 
