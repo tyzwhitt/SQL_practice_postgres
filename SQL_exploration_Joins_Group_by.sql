@@ -4,9 +4,9 @@ WHERE table_schema = 'public'
 ORDER BY table_name;
 -- This query retrieves the names of all tables in the 'public' schema of the PostgreSQL database and orders them alphabetically.
 
-SELECT * FROM categories LIMIT 24;
-SELECT * FROM products LIMIT 15;
-SELECT * FROM customer LIMIT 5;
+SELECT * FROM categories LIMIT 5;
+SELECT * FROM products LIMIT 5;
+SELECT * FROM customer LIMIT 40;
 SELECT * FROM orders LIMIT 5;
 -- These queries display the first 5 rows from the 'categories', 'products', 'customer', and 'orders' tables to give an overview of their structure and data.
 
@@ -82,3 +82,64 @@ SELECT p.product_id, p.name
 FROM products p
 LEFT JOIN categories c ON p.category_id = c.category_id
 WHERE c.category_id IS NULL;
+
+
+--lets keep exploring
+SELECT * FROM customer
+WHERE customer_name = 'Noah Foster';
+SELECT 'customer', COUNT(*) FROM customer;
+
+--need to figure out the duplicates situation with the customer names why is there so many more rows of customer names than the rest of the tables?
+
+-- How many rows share the same name
+SELECT customer_name, COUNT(*) AS cnt
+FROM customer
+GROUP BY customer_name
+HAVING COUNT(*) > 1
+ORDER BY cnt DESC, customer_name;
+-- This query identifies customer names that appear more than once in the 'customer' table, counting the occurrences and ordering the results by the count in descending order and then by customer name.
+
+-- List those rows so you can inspect differences (email, phone, city)
+WITH dup AS (
+  SELECT customer_name
+  FROM customer
+  GROUP BY customer_name
+  HAVING COUNT(*) > 1
+)
+SELECT c.*
+FROM customer c
+JOIN dup d USING (customer_name)
+ORDER BY c.customer_name, c.email, c.customer_id;
+
+SELECT
+  c.customer_id,
+  c.customer_name,
+  c.email,
+  COUNT(o.order_id)           AS order_count,
+  COALESCE(SUM(o.total_amount),0) AS total_spent
+FROM customer c
+LEFT JOIN orders o ON o.customer_id = c.customer_id
+GROUP BY c.customer_id, c.customer_name, c.email
+ORDER BY c.customer_name, c.customer_id;
+
+--it seems like all the duplicat entries dont have any orders thus we should be able to delete them safely if we wanted to clean up the database
+
+SELECT
+  o.order_id,
+    o.total_amount,
+    o.customer_id,
+  COUNT(o.order_id)           AS order_count,
+  COALESCE(SUM(o.total_amount),0) AS total_spent
+FROM orders o
+LEFT JOIN customer c ON o.order_id = o.order_id
+GROUP BY o.order_id, o.total_amount
+ORDER BY o.total_amount;
+
+
+
+
+SELECT customer_id, customer_name, order_id
+ orders
+
+SELECT * FROM orders o
+ORDER BY o.customer_id;

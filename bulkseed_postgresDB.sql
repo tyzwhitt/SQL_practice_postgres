@@ -14,6 +14,12 @@ SELECT current_user, current_database();
 --    (Required for categories(name) and products(name) if you use ON CONFLICT there)
 CREATE UNIQUE INDEX IF NOT EXISTS categories_name_uk_idx ON categories (name);
 CREATE UNIQUE INDEX IF NOT EXISTS products_name_uk_idx   ON products   (name);
+-- Enforce uniqueness of email, ignoring case and surrounding spaces
+CREATE UNIQUE INDEX IF NOT EXISTS customer_email_uk_idx
+ON public.customer ((LOWER(TRIM(email))));
+--Enforce uniqueness of orders based on customer_id and product_id
+CREATE UNIQUE INDEX IF NOT EXISTS orders_customer_product_uk_idx ON public.orders (customer_id, product_id);
+
 -- Begin transaction for bulk insert
 BEGIN;
 
@@ -42,7 +48,7 @@ INSERT INTO categories (name) VALUES
 ('Art & Craft'),
 ('Photography'),
 ('Travel')
-ON CONFLICT DO NOTHING;
+ON CONFLICT (name) DO NOTHING;
 
 
 -- =========================
@@ -90,7 +96,7 @@ INSERT INTO products (name, price, description, tags, category_id, supplier) VAL
   (SELECT category_id FROM categories WHERE name ='photography,camera'),'SupplierS'),
 ('Travel Pillow', NULL, 'Memory foam neck pillow', 'travel,comfort', 
   (SELECT category_id FROM categories WHERE name ='travel,comfort'), NULL)
-ON CONFLICT DO NOTHING;
+ON CONFLICT (name) DO NOTHING;
   
 -- =========================
 -- 3) CUSTOMERS (+20 rows)
@@ -116,7 +122,7 @@ INSERT INTO customer (customer_name, email, phone_number, address, city) VALUES
 ('Xena King',     'xena.king@example.com',     '313-555-0118', '560 Orchard Rd',      'Farmington'),
 ('Yara Flynn',    'yara.flynn@example.com',    '313-555-0119', '670 Highland Ave',    'Grosse Pointe'),
 ('Zane Ortiz',    'zane.ortiz@example.com',    '313-555-0120', '780 Riverside Dr',    'Southfield')
-ON CONFLICT DO NOTHING;
+ON CONFLICT ((LOWER(TRIM(email)))) DO NOTHING;
 -- =========================
 -- 4) ORDERS (+20 rows)
 -- =========================
@@ -143,7 +149,10 @@ INSERT INTO orders (customer_id, product_id, total_quantity, total_amount, order
 ((SELECT customer_id FROM customer WHERE customer_name='Jack Young' LIMIT 1), (SELECT product_id FROM products WHERE name='Dog Leash' LIMIT 1), 2,  79.00,  4.6,  1.2, 1.0, '2023-06-07 13:15:00', '2023-06-08 17:30:00'),
 ((SELECT customer_id FROM customer WHERE customer_name='Karen Brooks' LIMIT 1), (SELECT product_id FROM products WHERE name='Organic Coffee Beans' LIMIT 1), 1,  34.99,  4.0,  2.0, 1.5, '2023-06-09 08:00:00', '2023-06-10 09:40:00'),
 ((SELECT customer_id FROM customer WHERE customer_name='Liam Turner' LIMIT 1), (SELECT product_id FROM products WHERE name='Acoustic Guitar' LIMIT 1), 1, 199.00,  4.9,  3.0, 2.0, '2023-06-11 18:10:00', '2023-06-12 19:20:00')
-ON CONFLICT DO NOTHING;
+ON CONFLICT (customer_id, product_id) DO NOTHING;
+
+
+
 -- Optional quick checks:
 SELECT COUNT(*) FROM categories;
 SELECT COUNT(*) FROM products;
