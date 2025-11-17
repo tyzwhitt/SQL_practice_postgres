@@ -1,0 +1,6 @@
+--GitBash code to Run start Postgres SERVER
+--"/c/Program Files/PostgreSQL/18/bin/pg_ctl.exe" start -D "/c/Program Files/PostgreSQL/18/data" -l "/c/Program Files/PostgreSQL/18/data/server.log"
+
+--GitBash code to check status of Postgres SERVER
+--"/c/Program Files/PostgreSQL/18/bin/pg_ctl.exe" status -D "/c/Program Files/PostgreSQL/18/data"
+

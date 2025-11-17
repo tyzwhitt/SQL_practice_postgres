@@ -4,10 +4,10 @@ WHERE table_schema = 'public'
 ORDER BY table_name;
 -- This query retrieves the names of all tables in the 'public' schema of the PostgreSQL database and orders them alphabetically.
 
-SELECT * FROM categories LIMIT 5;
-SELECT * FROM products LIMIT 5;
-SELECT * FROM customer LIMIT 40;
-SELECT * FROM orders LIMIT 5;
+SELECT * FROM categories LIMIT 15;
+SELECT * FROM products LIMIT 15;
+SELECT * FROM customer LIMIT 15;
+SELECT * FROM orders LIMIT 15;
 -- These queries display the first 5 rows from the 'categories', 'products', 'customer', and 'orders' tables to give an overview of their structure and data.
 
 
@@ -138,8 +138,52 @@ ORDER BY o.total_amount;
 
 
 
-SELECT customer_id, customer_name, order_id
- orders
+Select p.category_id from products p
+--results category_id in products table only has 8 valid rows the rest are NULL
 
-SELECT * FROM orders o
-ORDER BY o.customer_id;
+
+SELECT p.category_id,
+  p.product_id,
+  p.name AS product_name,
+  cat.name AS category_name,
+  cat.category_id
+FROM products p
+LEft join categories cat
+ON p.category_id = cat.category_id
+ORDER BY p.product_id;
+
+SELECT p.category_id,
+  p.product_id,
+  p.name AS product_name,
+  cat.name AS category_name,
+  cat.category_id
+FROM products p
+Right join categories cat
+ON p.category_id = cat.category_id
+ORDER BY cat.category_id;
+
+SELECT p.category_id, p.product_id, p.name AS product_name, cat.name AS category_name, cat.category_id
+FROM categories cat
+Right join products p ON p.name = cat.name
+
+--confirm products have orders
+SELECT DISTINCT p.product_id, p.name
+FROM products p
+JOIN orders o ON o.product_id = p.product_id
+ORDER BY p.product_id;
+
+--correct join keys for this schema
+--products.category_id ↔ categories.category_id
+--orders.customer_id ↔ customer.customer_id
+--orders.product_id ↔ products.product_id
+
+SELECT product_id, name, description, tags
+FROM products
+WHERE category_id IS NULL;
+
+--finding all products with null category_ids
+
+SELECT product_id, name AS product_name
+FROM products
+WHERE category_id IS NULL
+ORDER BY product_id;
