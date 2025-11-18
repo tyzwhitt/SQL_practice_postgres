@@ -187,3 +187,122 @@ SELECT product_id, name AS product_name
 FROM products
 WHERE category_id IS NULL
 ORDER BY product_id;
+
+
+SELECT
+    cat.name AS category_name,
+    SUM(o.total_amount) AS total_revenue
+FROM categories cat
+JOIN products p ON cat.category_id = p.category_id
+JOIN orders o ON p.product_id = o.product_id
+GROUP BY cat.name
+ORDER BY total_revenue DESC NULLS LAST;
+--mising 6 categories need to find out why
+--this code will use left join to show all categories and turn NULLS to 0
+SELECT
+    cat.name AS category_name,
+    COALESCE(SUM(o.total_amount), 0) AS total_revenue,
+    COUNT(o.order_id) AS number_of_orders
+FROM categories cat
+LEFT JOIN products p ON cat.category_id = p.category_id
+LEFT JOIN orders o ON p.product_id = o.product_id
+GROUP BY cat.name
+ORDER BY total_revenue DESC NULLS LAST;
+
+--This tells you:
+--Which categories have no products at all
+-- Which categories have products but no orders
+SELECT 
+    cat.name AS category_name,
+    COUNT (cat.category_id) AS category_count,
+    COUNT(p.product_id) AS number_of_products,
+    COUNT(o.order_id) AS number_of_orders,
+    COALESCE(SUM(o.total_amount), 0) AS total_revenue
+FROM categories cat
+LEFT JOIN products p ON cat.category_id = p.category_id
+LEFT JOIN orders o ON p.product_id = o.product_id
+GROUP BY cat.name
+ORDER BY number_of_products DESC, total_revenue DESC;
+--shows 6 categories with no orders
+--one category with neither prodcut or order (fashion)
+--i want to see only electronics rows with cat_id, product_id, and order_id
+SELECT 
+    cat.category_id,
+    p.product_id,
+    o.order_id,
+    o.total_amount,
+    p.price,
+    p.description
+FROM categories cat
+LEFT JOIN products p ON cat.category_id = p.category_id
+LEFT JOIN orders o ON p.product_id = o.product_id
+WHERE cat.name = 'Electronics';
+--cat_id 1, product_id 5 has no correlating order_id
+select * from products limit (1);
+
+select 'orders', count(*) from orders;
+SELECT 'products', count(*) from products;
+select 'categories', count(*) from categories;
+select 'customer', count(*) from customer;
+--there are 25 products but only 24 orders why? and 26 customers
+--25 categories fashion has no order_id or proudct_id associated with it
+select * from categories
+where name = 'Fashion';
+
+select * from products
+where category_id =6;
+--No products for fashion only exists in categories table
+
+
+
+
+SELECT 'categories' as table_name,* FROM categories LIMIT 5;
+select 'products' as table_name,* from products LIMIT 5;
+--select 'customer' as table_name,* from customer LIMIT 5;
+select 'orders' as table_name,* from orders LIMIT 5;
+
+Select total_quantity, total_amount, product_id
+FRom orders
+where total_amount = 0 or total_amount is NUll;
+--product_id 45 has no total_amount
+
+Select price, product_id
+from products
+where product_id = 45;
+--product_id 45 has no price need to update with price
+--then update total_amount in orders
+
+--correct join keys for this schema
+--products.category_id ↔ categories.category_id
+--orders.customer_id ↔ customer.customer_id
+--orders.product_id ↔ products.product_id
+
+SELECT 'orders', COUNT(*)FROM orders
+SELECT 'products', COUNT (*)FROM products
+--there is 25 products but only 24 order rows tell me whhy?
+
+SELECT p.price, p.product_id, cat.name
+FROM products p
+left join categories cat on cat.category_id = p.category_id
+--again only one missing price for cat.name Travel p_id# 45
+
+SELECT o.total_quantity, o.total_amount, cat.name, p.product_id, p.price, p.category_id
+FROM orders o
+LEFT join products p on o.product_id = p.product_id
+LEFT JOIN categories cat on p.category_id = cat.category_id;
+--it seems that every product_id cat.name has a vaild order and total amount
+--24 orders only product_id 45 is missing an price and thus 0 total_amount
+
+SELECT * from orders limit (5);
+
+
+--NExt steps
+--update products set price = 199.99 where product_id = 45;
+--remove fashion(cat_id 6) has no products or orders
+--create a table with categories with product_ids that have no order_id (6 of them)
+--update total amount to be the price of product * total_quantity
+--there is an extra product id that has no order_id aka no oder can we add this to no orders list?
+
+
+
+--there are categories with product ids that dont have orders and thus don't have order ids which is okay

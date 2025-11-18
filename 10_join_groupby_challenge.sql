@@ -52,23 +52,17 @@ JOIN orders o ON p.product_id = o.product_id
 GROUP BY cat.name
 ORDER BY total_revenue DESC NULLS LAST;
 
-SELECT * FROM categories;
-SELECT p.name AS product_name, cat.name AS category_name
- FROM products p
- JOIN categories cat ON p.category_id = cat.category_id;
 
-SELECT * FROM orders;
-SELECT * FROM customer;
-SELECT * FROM products;
-SELECT * FROM categories;
+SELECT * FROM orders limit (5);
+SELECT * FROM customer limit (5);
+SELECT * FROM products limit (5);
+SELECT * FROM categories limit (5);
+select 'categories', count(*)from categories;
+select 'products', count(*) from products;
+select 'customer', count(*) from customer;
+select 'orders', count(*) from orders;
 
-SELECT o.total_amount, p.product_id, o.product_id, p.name
-    FROM orders o
-    JOIN products p ON o.product_id = p.product_id;
 
-SELECT cat.name AS category_name, cat.category_id, p.category_id
-    FROM categories cat
-    JOIN products p ON cat.category_id = p.category_id;
 
 --correct join keys for this schema
 --products.category_id ↔ categories.category_id
