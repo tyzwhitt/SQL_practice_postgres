@@ -277,8 +277,10 @@ where product_id = 45;
 --orders.customer_id ↔ customer.customer_id
 --orders.product_id ↔ products.product_id
 
-SELECT 'orders', COUNT(*)FROM orders
-SELECT 'products', COUNT (*)FROM products
+SELECT 'categories', COUNT (*) FROM categories;
+SELECT 'customer', COUNT(*) FROM customer;
+SELECT 'orders', COUNT(*)FROM orders;
+SELECT 'products', COUNT (*)FROM products;
 --there is 25 products but only 24 order rows tell me whhy?
 
 SELECT p.price, p.product_id, cat.name
@@ -306,3 +308,14 @@ SELECT * from orders limit (5);
 
 
 --there are categories with product ids that dont have orders and thus don't have order ids which is okay
+
+
+/*questions to be answered:
+3 customers without orders
+6 products without orders
+
+
+
+
+
+*/
