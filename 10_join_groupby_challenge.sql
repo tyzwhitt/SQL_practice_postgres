@@ -126,3 +126,16 @@ RIGHT JOIN categories cat ON cat.category_id = p.category_id
 WHERE o.order_id IS NULL
 ORDER BY cat_names_of_products_without_orders;
 
+
+--Categories with no orders
+SELECT p.name as product_name, cat.name as category_name
+From orders o
+RIGHT JOIN products p ON p.product_id = o.product_id
+RIGHT JOIN categories cat ON cat.category_id = p.category_id
+WHERE o.order_id IS NULL and cat.name NOT IN
+(SELECT DISTINCT cat.name
+ FROM categories cat
+ JOIN products p ON p.category_id = cat.category_id
+ JOIN orders o ON p.product_id = o.product_id)
+
+

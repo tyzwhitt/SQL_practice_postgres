@@ -319,3 +319,13 @@ SELECT * from orders limit (5);
 
 
 */
+
+
+--correct join keys for this schema
+--products.category_id ↔ categories.category_id
+--orders.customer_id ↔ customer.customer_id
+--orders.product_id ↔ products.product_id
+
+Select p.category_id
+FROM products p
+WHERE p.category_id = 6;
